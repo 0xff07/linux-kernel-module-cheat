@@ -784,7 +784,7 @@ Valid emulators: {}
                     env['baremetal'],
                     env['baremetal_source_dir'],
                     env['baremetal_build_dir'],
-                    env['baremetal_build_ext'],
+                    [env['baremetal_build_ext']],
                 )
                 source_path_noext = os.path.splitext(join(
                     env['baremetal_source_dir'],
@@ -1165,7 +1165,7 @@ lunch aosp_{}-eng
             if not self.env['dry_run']:
                 raise Exception('Source file not found for input: ' + in_path)
 
-    def resolve_executable(self, in_path, magic_in_dir, magic_out_dir, out_ext):
+    def resolve_executable(self, in_path, magic_in_dir, magic_out_dir, out_exts):
         if os.path.isabs(in_path):
             return in_path
         else:
@@ -1177,9 +1177,10 @@ lunch aosp_{}-eng
                 )
             ]
             for path in paths:
-                path = os.path.splitext(path)[0] + out_ext
-                if os.path.exists(path):
-                    return path
+                for out_ext in out_exts:
+                    path = os.path.splitext(path)[0] + out_ext
+                    if os.path.exists(path):
+                        return path
             if not self.env['dry_run']:
                 raise Exception('Executable file not found. Tried:\n' + '\n'.join(paths))
 
@@ -1192,7 +1193,7 @@ lunch aosp_{}-eng
             path,
             self.env['userland_source_dir'],
             self.env['userland_build_dir'],
-            self.env['userland_build_ext'],
+            [self.env['userland_build_ext']],
         )
 
     def resolve_userland_source(self, path):
